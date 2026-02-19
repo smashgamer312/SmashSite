@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Скачать файлы</title>
+    <!-- Подключаем ваш готовый CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Небольшой дополнительный стиль только для сетки карточек (не затрагивает основной CSS) -->
+    <style>
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        /* Стили для иконок и меток (если их нет в styles.css) */
+        .file-icon {
+            font-size: 3.5rem;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 0 8px var(--accent-glow));
+        }
+        .file-name {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            word-break: break-word;
+        }
+        .file-meta {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0.5rem 0 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>📁 Загрузки</h1>
+    <p style="margin-bottom: 2rem;">Файлы из папки <code style="background: #330000;">files/</code></p>
+
+    <!-- Сетка с карточками файлов (используем класс card из styles.css) -->
+    <div class="file-grid">
+        <!-- Карточка файла: документ -->
+        <div class="card file-item">
+            <div class="file-icon">📄</div>
+            <div class="file-name">document.pdf</div>
+            <div class="file-meta">PDF • 2.4 MB</div>
+            <a href="files/document.pdf" class="btn" download>Скачать</a>
+        </div>
+
+        <!-- Карточка: изображение -->
+        <div class="card file-item">
+            <div class="file-icon">🖼️</div>
+            <div class="file-name">wallpaper.jpg</div>
+            <div class="file-meta">JPG • 1.8 MB</div>
+            <a href="files/wallpaper.jpg" class="btn" download>Скачать</a>
+        </div>
+
+        <!-- Карточка: архив -->
+        <div class="card file-item">
+            <div class="file-icon">🗜️</div>
+            <div class="file-name">project.zip</div>
+            <div class="file-meta">ZIP • 15.3 MB</div>
+            <a href="files/project.zip" class="btn" download>Скачать</a>
+        </div>
+
+        <!-- Карточка: видео -->
+        <div class="card file-item">
+            <div class="file-icon">🎬</div>
+            <div class="file-name">presentation.mp4</div>
+            <div class="file-meta">MP4 • 48 MB</div>
+            <a href="files/presentation.mp4" class="btn" download>Скачать</a>
+        </div>
+
+        <!-- Карточка: музыка -->
+        <div class="card file-item">
+            <div class="file-icon">🎵</div>
+            <div class="file-name">sound.mp3</div>
+            <div class="file-meta">MP3 • 5.1 MB</div>
+            <a href="files/sound.mp3" class="btn" download>Скачать</a>
+        </div>
+
+        <!-- Карточка: текстовый файл -->
+        <div class="card file-item">
+            <div class="file-icon">📝</div>
+            <div class="file-name">readme.txt</div>
+            <div class="file-meta">TXT • 12 KB</div>
+            <a href="files/readme.txt" class="btn" download>Скачать</a>
+        </div>
+    </div>
+
+    <!-- Блок с пояснениями (стилизован через встроенные переменные) -->
+    <div class="card" style="margin-top: 40px; background: rgba(102, 0, 0, 0.2);">
+        <h3>💡 Автоматическое отображение файлов</h3>
+        <p>Это статический пример. Чтобы страница сама показывала все файлы из папки <code>files/</code>, используйте серверный скрипт (например, PHP). Создайте файл <code>list.php</code>:</p>
+        <pre style="background: #1e1212; padding: 1rem; border-radius: 12px;">&lt;?php
+header('Content-Type: application/json');
+$files = array_values(array_diff(scandir('files'), ['.', '..']));
+echo json_encode($files);
+?&gt;</pre>
+        <p>И добавьте JavaScript для динамической загрузки (пример закомментирован в исходном коде).</p>
+    </div>
+
+    <!-- (Необязательно) Динамическая загрузка через JS — раскомментируйте, если есть list.php 
+    <script>
+        async function loadFiles() {
+            try {
+                const response = await fetch('list.php');
+                const files = await response.json();
+                const grid = document.querySelector('.file-grid');
+                grid.innerHTML = '';
+                files.forEach(file => {
+                    const ext = file.split('.').pop().toLowerCase();
+                    let icon = '📄';
+                    if (['jpg','jpeg','png','gif','webp'].includes(ext)) icon = '🖼️';
+                    else if (['zip','rar','7z','tar','gz'].includes(ext)) icon = '🗜️';
+                    else if (['mp4','webm','mov','avi'].includes(ext)) icon = '🎬';
+                    else if (['mp3','wav','ogg','flac'].includes(ext)) icon = '🎵';
+                    else if (['txt','md','csv','json'].includes(ext)) icon = '📝';
+                    else if (['pdf'].includes(ext)) icon = '📄';
+                    
+                    const card = document.createElement('div');
+                    card.className = 'card file-item';
+                    card.innerHTML = `
+                        <div class="file-icon">${icon}</div>
+                        <div class="file-name">${file}</div>
+                        <div class="file-meta">—</div>
+                        <a href="files/${encodeURIComponent(file)}" class="btn" download>Скачать</a>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (e) { console.error('Ошибка загрузки списка', e); }
+        }
+        // loadFiles();
+    </script>
+    -->
+</body>
+</html>
